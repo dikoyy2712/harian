@@ -3,77 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pencatat Pengeluaran Harian</title>
+    <title>Pencatat Pengeluaran Harian Pro</title>
+    <!-- Tambahkan Font Poppins untuk tampilan modern -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
-        h2 { text-align: center; }
-        .saldo-box { background-color: #f4f4f4; padding: 15px; border-radius: 5px; text-align: center; margin-bottom: 20px; }
-        .saldo-box h3 { margin: 5px 0; color: #2c3e50; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 10px; }
-        button { width: 100%; padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
-        button.btn-reset { background-color: #e74c3c; margin-top: 10px; }
-        ul { list-style-type: none; padding: 0; }
-        li { background: #eee; margin: 5px 0; padding: 10px; border-radius: 3px; display: flex; justify-content: space-between; }
+        :root {
+            --primary: #4361ee;
+            --secondary: #a0a4b8;
+            --success: #3f37c9;
+            --warning: #f72585;
+            --danger: #ef233c;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --bg: #e0e6ed;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--dark);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        h2.main-title {
+            text-align: center;
+            margin-top: 0;
+            color: var(--dark);
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        h2.main-title img {
+            width: 35px;
+            height: 35px;
+            margin-right: 10px;
+        }
+
+        .saldo-box {
+            background-color: var(--primary);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .saldo-box small {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.8;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .saldo-box h3 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .form-section {
+            border: 1px solid #e0e0e0;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .form-section h4 {
+            margin-top: 0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .helper-text {
+            color: var(--secondary);
+            font-size: 12px;
+            margin-top: -15px;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.btn-add-saldo {
+            background-color: var(--success);
+            color: white;
+        }
+
+        button.btn-add-expense {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        button.btn-reset {
+            background-color: var(--danger);
+            color: white;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .history-section {
+            margin-top: 30px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .history-header h4 {
+            margin: 0;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .history-header #liveExpense {
+            color: var(--danger);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background: white;
+            margin: 10px 0;
+            padding: 15px 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+            transition: background 0.2s;
+        }
+
+        li:hover {
+            background: var(--light);
+        }
+
+        .li-desc {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .li-desc strong {
+            font-size: 16px;
+            color: var(--dark);
+        }
+
+        .li-desc small {
+            font-size: 12px;
+            color: var(--secondary);
+            margin-top: 2px;
+        }
+
+        .li-amount {
+            color: var(--danger);
+            font-weight: 600;
+            font-size: 16px;
+        }
+
     </style>
 </head>
 <body>
 
-    <h2>💰 Pencatat Pengeluaran</h2>
+    <div class="container">
+        <h2 class="main-title"><img src="https://img.icons8.com/emoji/48/money-bag-emoji.png" alt="money-bag"/>Pencatat Pengeluaran</h2>
 
-    <div class="saldo-box">
-        <small>Sisa Saldo Anda:</small>
-        <h3 id="tampilSaldo">Rp 0</h3>
+        <div class="saldo-box">
+            <small>Sisa Saldo Anda:</small>
+            <h3 id="tampilSaldo">Rp 0</h3>
+        </div>
+
+        <div class="form-section">
+            <h4>➕ Tambah Saldo (Isi Ulang)</h4>
+            <div class="form-group">
+                <label>Nominal Saldo Baru</label>
+                <input type="text" id="inputSaldo" placeholder="Contoh: 200.000">
+            </div>
+            <button class="btn-add-saldo" onclick="tambahSaldo()">Update Saldo</button>
+        </div>
+
+        <div class="form-section">
+            <h4>💸 Catat Pengeluaran Baru</h4>
+            <div class="form-group">
+                <label>Keterangan</label>
+                <input type="text" id="ketPengeluaran" placeholder="Contoh: Makan Siang">
+            </div>
+            <div class="form-group">
+                <label>Jumlah</label>
+                <input type="text" id="jumlahPengeluaran" placeholder="Contoh: 30.000">
+            </div>
+            <button class="btn-add-expense" onclick="catatPengeluaran()">Simpan Pengeluaran</button>
+        </div>
+
+        <div class="history-section">
+            <div class="history-header">
+                <h4>📜 Riwayat Transaksi</h4>
+                <div id="liveExpense">Hanya menampilkan pengeluaran.</div>
+            </div>
+            <ul id="daftarTransaksi">
+                <!-- Data akan muncul di sini -->
+            </ul>
+        </div>
+
+        <button class="btn-reset" onclick="hapusSemuaData()">Reset Semua Data</button>
     </div>
-
-    <div class="form-group">
-        <label>Tambah Saldo (Isi Ulang)</label>
-        <input type="number" id="inputSaldo" placeholder="Nominal Rp">
-        <button onclick="tambahSaldo()">+ Tambah Saldo</button>
-    </div>
-
-    <hr>
-
-    <div class="form-group">
-        <label>Catat Pengeluaran Baru</label>
-        <input type="text" id="ketPengeluaran" placeholder="Keterangan (cth: Makan Siang)">
-        <input type="number" id="jumlahPengeluaran" placeholder="Jumlah Rp">
-        <button onclick="catatPengeluaran()" style="background-color: #e67e22;">- Simpan Pengeluaran</button>
-    </div>
-
-    <hr>
-
-    <h3>📜 Riwayat Transaksi</h3>
-    <ul id="daftarTransaksi"></ul>
-
-    <button class="btn-reset" onclick="hapusSemuaData()">Reset Semua Data</button>
 
     <script>
-        // Memuat data dari simpanan lokal browser (localStorage)
+        // Memuat data dari localStorage
         let saldo = parseInt(localStorage.getItem('saldo')) || 0;
         let transaksi = JSON.parse(localStorage.getItem('transaksi')) || [];
 
+        // Fungsi pembantu untuk memformat mata uang
+        const formatRupiah = (angka) => {
+            return 'Rp ' + angka.toLocaleString('id-ID');
+        };
+
+        // Fungsi pembantu untuk menghapus titik dari input pengguna (Fix)
+        const formatInput = (input) => {
+            return parseInt(input.replace(/\./g, ''));
+        };
+
         function updateTampilan() {
-            document.getElementById('tampilSaldo').innerText = 'Rp ' + saldo.toLocaleString('id-ID');
+            document.getElementById('tampilSaldo').innerText = formatRupiah(saldo);
             const list = document.getElementById('daftarTransaksi');
             list.innerHTML = '';
             
-            transaksi.forEach(t => {
-                const li = document.createElement('li');
-                li.innerHTML = `<span><strong>${t.ket}</strong> (${t.tgl})</span> <span>- Rp ${t.jumlah.toLocaleString('id-ID')}</span>`;
-                list.appendChild(li);
-            });
+            if (transaksi.length === 0) {
+                list.innerHTML = `<li style="justify-content: center; color: var(--secondary); font-size: 14px;">Belum ada pengeluaran hari ini.</li>`;
+            } else {
+                transaksi.forEach(t => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="li-desc">
+                            <strong>${t.ket}</strong>
+                            <small>${t.tgl}</small>
+                        </div>
+                        <div class="li-amount">-${formatRupiah(t.jumlah)}</div>
+                    `;
+                    list.appendChild(li);
+                });
+            }
 
+            // Simpan data
             localStorage.setItem('saldo', saldo);
             localStorage.setItem('transaksi', JSON.stringify(transaksi));
         }
 
         function tambahSaldo() {
             const input = document.getElementById('inputSaldo');
-            const nilai = parseInt(input.value);
-            if (nilai > 0) {
-                saldo += nilai;
+            const nilaiRaw = input.value;
+            const nilai = formatInput(nilaiRaw);
+            
+            if (isNaN(nilai) || nilai <= 0) {
+                alert('Masukkan nominal saldo yang valid, tanpa tanda lain selain titik (.).');
+            } else {
+                saldo = nilai; // Langsung set saldo dengan nilai baru
                 input.value = '';
                 updateTampilan();
             }
@@ -83,11 +336,13 @@
             const ketInput = document.getElementById('ketPengeluaran');
             const jumlahInput = document.getElementById('jumlahPengeluaran');
             const ket = ketInput.value;
-            const jumlah = parseInt(jumlahInput.value);
+            const jumlahRaw = jumlahInput.value;
+            const jumlah = formatInput(jumlahRaw);
 
-            if (ket && jumlah > 0) {
+            if (ket && !isNaN(jumlah) && jumlah > 0) {
                 if (jumlah > saldo) {
                     alert('⚠️ Peringatan: Pengeluaran melebihi sisa saldo Anda!');
+                    return; // Hentikan fungsi
                 }
                 saldo -= jumlah;
                 const tgl = new Date().toLocaleDateString('id-ID');
@@ -97,12 +352,12 @@
                 jumlahInput.value = '';
                 updateTampilan();
             } else {
-                alert('Silakan isi keterangan dan jumlah dengan benar!');
+                alert('Silakan isi keterangan dan jumlah pengeluaran dengan benar.');
             }
         }
 
         function hapusSemuaData() {
-            if (confirm('Yakin ingin menghapus seluruh data saldo dan riwayat?')) {
+            if (confirm('Yakin ingin menghapus seluruh data saldo dan riwayat pengeluaran?')) {
                 localStorage.clear();
                 saldo = 0;
                 transaksi = [];
