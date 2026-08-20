@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajer Keuangan Harian</title>
+    <title>Manajer Keuangan Harian Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -45,11 +45,10 @@
             font-size: 24px;
         }
 
-        /* Ringkasan Dashboard */
         .dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
             margin-bottom: 25px;
         }
 
@@ -71,12 +70,18 @@
         .card small { font-size: 12px; opacity: 0.9; }
         .card h3 { margin: 5px 0 0 0; font-size: 22px; font-weight: 600; }
 
-        /* Form Input */
         .form-container {
             background: var(--light);
             padding: 20px;
             border-radius: 15px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .form-container h4 {
+            margin: 0 0 15px 0;
+            font-size: 15px;
+            color: var(--primary);
         }
 
         .form-group {
@@ -118,7 +123,8 @@
             margin-top: 5px;
         }
 
-        /* Riwayat Transaksi */
+        button.btn-submit:hover { opacity: 0.9; }
+
         .history-header {
             display: flex;
             justify-content: space-between;
@@ -190,7 +196,7 @@
         <!-- Ringkasan Saldo -->
         <div class="dashboard">
             <div class="card balance">
-                <small>Sisa Saldo</small>
+                <small>Sisa Saldo Anda</small>
                 <h3 id="tampilSaldo">Rp 0</h3>
             </div>
             <div class="card income">
@@ -205,20 +211,21 @@
 
         <!-- Form Tambah Transaksi -->
         <div class="form-container">
+            <h4>✍️ Catat Transaksi / Saldo</h4>
             <div class="form-group">
                 <label>Jenis Transaksi</label>
                 <select id="jenisTransaksi">
                     <option value="keluar">💸 Pengeluaran (-)</option>
-                    <option value="masuk">➕ Pemasukan (+)</option>
+                    <option value="masuk">➕ Pemasukan / Isi Saldo (+)</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Keterangan</label>
-                <input type="text" id="ketTransaksi" placeholder="Cth: Gaji, Makan Siang, Bensin">
+                <input type="text" id="ketTransaksi" placeholder="Cth: Makan Siang, Gaji, Isi Saldo">
             </div>
             <div class="form-group">
                 <label>Nominal (Rp)</label>
-                <input type="text" id="jumlahTransaksi" placeholder="Cth: 50.000">
+                <input type="text" id="jumlahTransaksi" placeholder="Cth: 50.000 atau 200.000">
             </div>
             <button class="btn-submit" onclick="tambahTransaksi()">Simpan Transaksi</button>
         </div>
@@ -235,13 +242,13 @@
     </div>
 
     <script>
-        let transaksi = JSON.parse(localStorage.getItem('transaksi_v2')) || [];
+        let transaksi = JSON.parse(localStorage.getItem('transaksi_v3')) || [];
 
         const formatRupiah = (angka) => 'Rp ' + angka.toLocaleString('id-ID');
 
         const parseInput = (str) => {
             if (!str) return 0;
-            return parseInt(str.toString().replace(/\./g, '')) || 0;
+            return parseInt(str.toString().replace(/\./g, '').replace(/,/g, '')) || 0;
         };
 
         function updateTampilan() {
@@ -251,23 +258,27 @@
             const list = document.getElementById('daftarTransaksi');
             list.innerHTML = '';
 
-            transaksi.forEach((t, index) => {
-                if (t.jenis === 'masuk') totalMasuk += t.jumlah;
-                else totalKeluar += t.jumlah;
+            if (transaksi.length === 0) {
+                list.innerHTML = `<li style="justify-content: center; color: #adb5bd; font-size: 13px;">Belum ada transaksi recorded.</li>`;
+            } else {
+                transaksi.forEach((t, index) => {
+                    if (t.jenis === 'masuk') totalMasuk += t.jumlah;
+                    else totalKeluar += t.jumlah;
 
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <div class="item-info">
-                        <strong>${t.ket}</strong>
-                        <small>${t.tgl}</small>
-                    </div>
-                    <div class="item-right">
-                        <span class="amount ${t.jenis}">${t.jenis === 'masuk' ? '+' : '-'}${formatRupiah(t.jumlah)}</span>
-                        <button class="btn-delete" onclick="hapusSatuTransaksi(${index})">❌</button>
-                    </div>
-                `;
-                list.appendChild(li);
-            });
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <div class="item-info">
+                            <strong>${t.ket}</strong>
+                            <small>${t.tgl}</small>
+                        </div>
+                        <div class="item-right">
+                            <span class="amount ${t.jenis}">${t.jenis === 'masuk' ? '+' : '-'}${formatRupiah(t.jumlah)}</span>
+                            <button class="btn-delete" onclick="hapusSatuTransaksi(${index})">❌</button>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+            }
 
             const sisaSaldo = totalMasuk - totalKeluar;
 
@@ -275,20 +286,37 @@
             document.getElementById('tampilPemasukan').innerText = formatRupiah(totalMasuk);
             document.getElementById('tampilPengeluaran').innerText = formatRupiah(totalKeluar);
 
-            localStorage.setItem('transaksi_v2', JSON.stringify(transaksi));
+            localStorage.setItem('transaksi_v3', JSON.stringify(transaksi));
         }
 
         function tambahTransaksi() {
             const jenis = document.getElementById('jenisTransaksi').value;
-            const ket = document.getElementById('ketTransaksi').value;
-            const jumlah = parseInput(document.getElementById('jumlahTransaksi').value);
+            const ketInput = document.getElementById('ketTransaksi').value;
+            const jumlahInput = document.getElementById('jumlahTransaksi').value;
+            
+            const jumlah = parseInput(jumlahInput);
+            const ket = ketInput.trim() === '' ? (jenis === 'masuk' ? 'Pemasukan / Saldo' : 'Pengeluaran') : ketInput.trim();
 
-            if (ket.trim() === '' || jumlah <= 0) {
-                alert('Silakan masukkan keterangan dan nominal angka yang valid!');
+            if (jumlah <= 0) {
+                alert('Silakan masukkan nominal angka yang benar!');
                 return;
             }
 
-            constsekarang = new Date();
+            // Peringatan jika pengeluaran melebihi sisa saldo saat ini
+            let totalMasuk = 0, totalKeluar = 0;
+            transaksi.forEach(t => {
+                if (t.jenis === 'masuk') totalMasuk += t.jumlah;
+                else totalKeluar += t.jumlah;
+            });
+            const sisaSaldoSaatIni = totalMasuk - totalKeluar;
+
+            if (jenis === 'keluar' && jumlah > sisaSaldoSaatIni) {
+                if (!confirm('⚠️ Peringatan: Pengeluaran melebihi sisa saldo Anda! Lanjutkan menyimpan?')) {
+                    return;
+                }
+            }
+
+            const sekarang = new Date();
             const tgl = sekarang.toLocaleDateString('id-ID') + ' ' + sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
             transaksi.unshift({ jenis, ket, jumlah, tgl });
@@ -307,7 +335,7 @@
         function hapusSemuaData() {
             if (confirm('Apakah Anda yakin ingin menghapus seluruh data transaksi?')) {
                 transaksi = [];
-                localStorage.removeItem('transaksi_v2');
+                localStorage.removeItem('transaksi_v3');
                 updateTampilan();
             }
         }
