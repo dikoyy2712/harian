@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencatat Pengeluaran Harian</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 500px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; }
+        h2 { text-align: center; }
+        .saldo-box { background-color: #f4f4f4; padding: 15px; border-radius: 5px; text-align: center; margin-bottom: 20px; }
+        .saldo-box h3 { margin: 5px 0; color: #2c3e50; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; margin-bottom: 10px; }
+        button { width: 100%; padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        button.btn-reset { background-color: #e74c3c; margin-top: 10px; }
+        ul { list-style-type: none; padding: 0; }
+        li { background: #eee; margin: 5px 0; padding: 10px; border-radius: 3px; display: flex; justify-content: space-between; }
+    </style>
+</head>
+<body>
+
+    <h2>💰 Pencatat Pengeluaran</h2>
+
+    <div class="saldo-box">
+        <small>Sisa Saldo Anda:</small>
+        <h3 id="tampilSaldo">Rp 0</h3>
+    </div>
+
+    <div class="form-group">
+        <label>Tambah Saldo (Isi Ulang)</label>
+        <input type="number" id="inputSaldo" placeholder="Nominal Rp">
+        <button onclick="tambahSaldo()">+ Tambah Saldo</button>
+    </div>
+
+    <hr>
+
+    <div class="form-group">
+        <label>Catat Pengeluaran Baru</label>
+        <input type="text" id="ketPengeluaran" placeholder="Keterangan (cth: Makan Siang)">
+        <input type="number" id="jumlahPengeluaran" placeholder="Jumlah Rp">
+        <button onclick="catatPengeluaran()" style="background-color: #e67e22;">- Simpan Pengeluaran</button>
+    </div>
+
+    <hr>
+
+    <h3>📜 Riwayat Transaksi</h3>
+    <ul id="daftarTransaksi"></ul>
+
+    <button class="btn-reset" onclick="hapusSemuaData()">Reset Semua Data</button>
+
+    <script>
+        // Memuat data dari simpanan lokal browser (localStorage)
+        let saldo = parseInt(localStorage.getItem('saldo')) || 0;
+        let transaksi = JSON.parse(localStorage.getItem('transaksi')) || [];
+
+        function updateTampilan() {
+            document.getElementById('tampilSaldo').innerText = 'Rp ' + saldo.toLocaleString('id-ID');
+            const list = document.getElementById('daftarTransaksi');
+            list.innerHTML = '';
+            
+            transaksi.forEach(t => {
+                const li = document.createElement('li');
+                li.innerHTML = `<span><strong>${t.ket}</strong> (${t.tgl})</span> <span>- Rp ${t.jumlah.toLocaleString('id-ID')}</span>`;
+                list.appendChild(li);
+            });
+
+            localStorage.setItem('saldo', saldo);
+            localStorage.setItem('transaksi', JSON.stringify(transaksi));
+        }
+
+        function tambahSaldo() {
+            const input = document.getElementById('inputSaldo');
+            const nilai = parseInt(input.value);
+            if (nilai > 0) {
+                saldo += nilai;
+                input.value = '';
+                updateTampilan();
+            }
+        }
+
+        function catatPengeluaran() {
+            const ketInput = document.getElementById('ketPengeluaran');
+            const jumlahInput = document.getElementById('jumlahPengeluaran');
+            const ket = ketInput.value;
+            const jumlah = parseInt(jumlahInput.value);
+
+            if (ket && jumlah > 0) {
+                if (jumlah > saldo) {
+                    alert('⚠️ Peringatan: Pengeluaran melebihi sisa saldo Anda!');
+                }
+                saldo -= jumlah;
+                const tgl = new Date().toLocaleDateString('id-ID');
+                transaksi.unshift({ ket, jumlah, tgl });
+
+                ketInput.value = '';
+                jumlahInput.value = '';
+                updateTampilan();
+            } else {
+                alert('Silakan isi keterangan dan jumlah dengan benar!');
+            }
+        }
+
+        function hapusSemuaData() {
+            if (confirm('Yakin ingin menghapus seluruh data saldo dan riwayat?')) {
+                localStorage.clear();
+                saldo = 0;
+                transaksi = [];
+                updateTampilan();
+            }
+        }
+
+        // Tampilkan data awal saat halaman dimuat
+        updateTampilan();
+    </script>
+</body>
+</html>
