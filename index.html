@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pencatat Pengeluaran Harian Pro</title>
-    <!-- Tambahkan Font Poppins untuk tampilan modern -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Manajer Keuangan Harian</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4361ee;
-            --secondary: #a0a4b8;
-            --success: #3f37c9;
-            --warning: #f72585;
-            --danger: #ef233c;
+            --success: #2ec4b6;
+            --danger: #e71d36;
+            --dark: #011627;
             --light: #f8f9fa;
-            --dark: #212529;
-            --bg: #e0e6ed;
-            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --bg: #eef2f5;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 25px rgba(0,0,0,0.05);
         }
 
         body {
@@ -33,339 +31,287 @@
 
         .container {
             width: 100%;
-            max-width: 550px;
-            background-color: white;
-            padding: 40px;
+            max-width: 500px;
+            background-color: var(--card-bg);
+            padding: 30px;
             border-radius: 20px;
             box-shadow: var(--shadow);
         }
 
-        h2.main-title {
+        h2.title {
             text-align: center;
             margin-top: 0;
-            color: var(--dark);
-            font-size: 28px;
             font-weight: 700;
+            font-size: 24px;
         }
 
-        h2.main-title img {
-            width: 35px;
-            height: 35px;
-            margin-right: 10px;
+        /* Ringkasan Dashboard */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
         }
 
-        .saldo-box {
-            background-color: var(--primary);
+        .card {
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
             color: white;
-            padding: 25px;
+        }
+
+        .card.balance {
+            grid-column: span 2;
+            background: linear-gradient(135deg, var(--primary), #3f37c9);
+        }
+
+        .card.income { background-color: var(--success); }
+        .card.expense { background-color: var(--danger); }
+
+        .card small { font-size: 12px; opacity: 0.9; }
+        .card h3 { margin: 5px 0 0 0; font-size: 22px; font-weight: 600; }
+
+        /* Form Input */
+        .form-container {
+            background: var(--light);
+            padding: 20px;
             border-radius: 15px;
-            text-align: center;
-            margin-bottom: 30px;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.2);
-        }
-
-        .saldo-box small {
-            font-size: 14px;
-            font-weight: 400;
-            opacity: 0.8;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .saldo-box h3 {
-            margin: 0;
-            font-size: 36px;
-            font-weight: 700;
-        }
-
-        .form-section {
-            border: 1px solid #e0e0e0;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-
-        .form-section h4 {
-            margin-top: 0;
-            color: var(--primary);
-            font-weight: 600;
+            margin-bottom: 25px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 12px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            font-size: 12px;
             font-weight: 600;
-            color: var(--secondary);
+            margin-bottom: 5px;
+            color: #6c757d;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            box-sizing: border-box;
+            border: 1.5px solid #dee2e6;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
             font-size: 14px;
         }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-family: 'Poppins', sans-serif;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: var(--primary);
         }
 
-        .helper-text {
-            color: var(--secondary);
-            font-size: 12px;
-            margin-top: -15px;
-            display: block;
-            margin-bottom: 15px;
-        }
-
-        button {
+        button.btn-submit {
             width: 100%;
-            padding: 15px;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
             border: none;
             border-radius: 8px;
             font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-            font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
+            margin-top: 5px;
         }
 
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button.btn-add-saldo {
-            background-color: var(--success);
-            color: white;
-        }
-
-        button.btn-add-expense {
-            background-color: var(--warning);
-            color: white;
-        }
-
-        button.btn-reset {
-            background-color: var(--danger);
-            color: white;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        .history-section {
-            margin-top: 30px;
-        }
-
+        /* Riwayat Transaksi */
         .history-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
-        .history-header h4 {
-            margin: 0;
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .history-header #liveExpense {
-            color: var(--danger);
-            font-size: 14px;
-            font-weight: 600;
-        }
+        .history-header h4 { margin: 0; font-weight: 600; }
 
         ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
             margin: 0;
+            max-height: 250px;
+            overflow-y: auto;
         }
 
         li {
-            background: white;
-            margin: 10px 0;
-            padding: 15px 20px;
+            background: var(--light);
+            margin-bottom: 10px;
+            padding: 12px 15px;
             border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid #e0e0e0;
-            transition: background 0.2s;
         }
 
-        li:hover {
-            background: var(--light);
-        }
+        .item-info strong { display: block; font-size: 14px; }
+        .item-info small { font-size: 11px; color: #6c757d; }
 
-        .li-desc {
+        .item-right {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
 
-        .li-desc strong {
-            font-size: 16px;
-            color: var(--dark);
+        .amount { font-weight: 600; font-size: 14px; }
+        .amount.masuk { color: var(--success); }
+        .amount.keluar { color: var(--danger); }
+
+        .btn-delete {
+            background: none;
+            border: none;
+            color: #adb5bd;
+            cursor: pointer;
+            font-size: 14px;
         }
 
-        .li-desc small {
-            font-size: 12px;
-            color: var(--secondary);
-            margin-top: 2px;
-        }
+        .btn-delete:hover { color: var(--danger); }
 
-        .li-amount {
+        .btn-reset {
+            width: 100%;
+            background: transparent;
+            border: 1px dashed var(--danger);
             color: var(--danger);
+            padding: 10px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
         }
-
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2 class="main-title"><img src="https://img.icons8.com/emoji/48/money-bag-emoji.png" alt="money-bag"/>Pencatat Pengeluaran</h2>
+        <h2 class="title">💰 Catatan Keuangan</h2>
 
-        <div class="saldo-box">
-            <small>Sisa Saldo Anda:</small>
-            <h3 id="tampilSaldo">Rp 0</h3>
-        </div>
-
-        <div class="form-section">
-            <h4>➕ Tambah Saldo (Isi Ulang)</h4>
-            <div class="form-group">
-                <label>Nominal Saldo Baru</label>
-                <input type="text" id="inputSaldo" placeholder="Contoh: 200.000">
+        <!-- Ringkasan Saldo -->
+        <div class="dashboard">
+            <div class="card balance">
+                <small>Sisa Saldo</small>
+                <h3 id="tampilSaldo">Rp 0</h3>
             </div>
-            <button class="btn-add-saldo" onclick="tambahSaldo()">Update Saldo</button>
+            <div class="card income">
+                <small>Total Pemasukan</small>
+                <h3 id="tampilPemasukan">Rp 0</h3>
+            </div>
+            <div class="card expense">
+                <small>Total Pengeluaran</small>
+                <h3 id="tampilPengeluaran">Rp 0</h3>
+            </div>
         </div>
 
-        <div class="form-section">
-            <h4>💸 Catat Pengeluaran Baru</h4>
+        <!-- Form Tambah Transaksi -->
+        <div class="form-container">
+            <div class="form-group">
+                <label>Jenis Transaksi</label>
+                <select id="jenisTransaksi">
+                    <option value="keluar">💸 Pengeluaran (-)</option>
+                    <option value="masuk">➕ Pemasukan (+)</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label>Keterangan</label>
-                <input type="text" id="ketPengeluaran" placeholder="Contoh: Makan Siang">
+                <input type="text" id="ketTransaksi" placeholder="Cth: Gaji, Makan Siang, Bensin">
             </div>
             <div class="form-group">
-                <label>Jumlah</label>
-                <input type="text" id="jumlahPengeluaran" placeholder="Contoh: 30.000">
+                <label>Nominal (Rp)</label>
+                <input type="text" id="jumlahTransaksi" placeholder="Cth: 50.000">
             </div>
-            <button class="btn-add-expense" onclick="catatPengeluaran()">Simpan Pengeluaran</button>
+            <button class="btn-submit" onclick="tambahTransaksi()">Simpan Transaksi</button>
         </div>
 
+        <!-- Riwayat Transaksi -->
         <div class="history-section">
             <div class="history-header">
                 <h4>📜 Riwayat Transaksi</h4>
-                <div id="liveExpense">Hanya menampilkan pengeluaran.</div>
             </div>
-            <ul id="daftarTransaksi">
-                <!-- Data akan muncul di sini -->
-            </ul>
+            <ul id="daftarTransaksi"></ul>
         </div>
 
         <button class="btn-reset" onclick="hapusSemuaData()">Reset Semua Data</button>
     </div>
 
     <script>
-        // Memuat data dari localStorage
-        let saldo = parseInt(localStorage.getItem('saldo')) || 0;
-        let transaksi = JSON.parse(localStorage.getItem('transaksi')) || [];
+        let transaksi = JSON.parse(localStorage.getItem('transaksi_v2')) || [];
 
-        // Fungsi pembantu untuk memformat mata uang
-        const formatRupiah = (angka) => {
-            return 'Rp ' + angka.toLocaleString('id-ID');
-        };
+        const formatRupiah = (angka) => 'Rp ' + angka.toLocaleString('id-ID');
 
-        // Fungsi pembantu untuk menghapus titik dari input pengguna (Fix)
-        const formatInput = (input) => {
-            return parseInt(input.replace(/\./g, ''));
+        const parseInput = (str) => {
+            if (!str) return 0;
+            return parseInt(str.toString().replace(/\./g, '')) || 0;
         };
 
         function updateTampilan() {
-            document.getElementById('tampilSaldo').innerText = formatRupiah(saldo);
+            let totalMasuk = 0;
+            let totalKeluar = 0;
+
             const list = document.getElementById('daftarTransaksi');
             list.innerHTML = '';
-            
-            if (transaksi.length === 0) {
-                list.innerHTML = `<li style="justify-content: center; color: var(--secondary); font-size: 14px;">Belum ada pengeluaran hari ini.</li>`;
-            } else {
-                transaksi.forEach(t => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `
-                        <div class="li-desc">
-                            <strong>${t.ket}</strong>
-                            <small>${t.tgl}</small>
-                        </div>
-                        <div class="li-amount">-${formatRupiah(t.jumlah)}</div>
-                    `;
-                    list.appendChild(li);
-                });
-            }
 
-            // Simpan data
-            localStorage.setItem('saldo', saldo);
-            localStorage.setItem('transaksi', JSON.stringify(transaksi));
+            transaksi.forEach((t, index) => {
+                if (t.jenis === 'masuk') totalMasuk += t.jumlah;
+                else totalKeluar += t.jumlah;
+
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div class="item-info">
+                        <strong>${t.ket}</strong>
+                        <small>${t.tgl}</small>
+                    </div>
+                    <div class="item-right">
+                        <span class="amount ${t.jenis}">${t.jenis === 'masuk' ? '+' : '-'}${formatRupiah(t.jumlah)}</span>
+                        <button class="btn-delete" onclick="hapusSatuTransaksi(${index})">❌</button>
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+
+            const sisaSaldo = totalMasuk - totalKeluar;
+
+            document.getElementById('tampilSaldo').innerText = formatRupiah(sisaSaldo);
+            document.getElementById('tampilPemasukan').innerText = formatRupiah(totalMasuk);
+            document.getElementById('tampilPengeluaran').innerText = formatRupiah(totalKeluar);
+
+            localStorage.setItem('transaksi_v2', JSON.stringify(transaksi));
         }
 
-        function tambahSaldo() {
-            const input = document.getElementById('inputSaldo');
-            const nilaiRaw = input.value;
-            const nilai = formatInput(nilaiRaw);
-            
-            if (isNaN(nilai) || nilai <= 0) {
-                alert('Masukkan nominal saldo yang valid, tanpa tanda lain selain titik (.).');
-            } else {
-                saldo = nilai; // Langsung set saldo dengan nilai baru
-                input.value = '';
-                updateTampilan();
+        function tambahTransaksi() {
+            const jenis = document.getElementById('jenisTransaksi').value;
+            const ket = document.getElementById('ketTransaksi').value;
+            const jumlah = parseInput(document.getElementById('jumlahTransaksi').value);
+
+            if (ket.trim() === '' || jumlah <= 0) {
+                alert('Silakan masukkan keterangan dan nominal angka yang valid!');
+                return;
             }
+
+            constsekarang = new Date();
+            const tgl = sekarang.toLocaleDateString('id-ID') + ' ' + sekarang.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            transaksi.unshift({ jenis, ket, jumlah, tgl });
+
+            document.getElementById('ketTransaksi').value = '';
+            document.getElementById('jumlahTransaksi').value = '';
+
+            updateTampilan();
         }
 
-        function catatPengeluaran() {
-            const ketInput = document.getElementById('ketPengeluaran');
-            const jumlahInput = document.getElementById('jumlahPengeluaran');
-            const ket = ketInput.value;
-            const jumlahRaw = jumlahInput.value;
-            const jumlah = formatInput(jumlahRaw);
-
-            if (ket && !isNaN(jumlah) && jumlah > 0) {
-                if (jumlah > saldo) {
-                    alert('⚠️ Peringatan: Pengeluaran melebihi sisa saldo Anda!');
-                    return; // Hentikan fungsi
-                }
-                saldo -= jumlah;
-                const tgl = new Date().toLocaleDateString('id-ID');
-                transaksi.unshift({ ket, jumlah, tgl });
-
-                ketInput.value = '';
-                jumlahInput.value = '';
-                updateTampilan();
-            } else {
-                alert('Silakan isi keterangan dan jumlah pengeluaran dengan benar.');
-            }
+        function hapusSatuTransaksi(index) {
+            transaksi.splice(index, 1);
+            updateTampilan();
         }
 
         function hapusSemuaData() {
-            if (confirm('Yakin ingin menghapus seluruh data saldo dan riwayat pengeluaran?')) {
-                localStorage.clear();
-                saldo = 0;
+            if (confirm('Apakah Anda yakin ingin menghapus seluruh data transaksi?')) {
                 transaksi = [];
+                localStorage.removeItem('transaksi_v2');
                 updateTampilan();
             }
         }
 
-        // Tampilkan data awal saat halaman dimuat
         updateTampilan();
     </script>
 </body>
